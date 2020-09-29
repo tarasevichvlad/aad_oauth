@@ -29,20 +29,17 @@ class AadOAuth {
 
   Future<void> login() async {
     await _removeOldTokenOnFirstLogin();
-    if (!Token.tokenIsValid(_token) )
-      await _performAuthorization();
+    if (!Token.tokenIsValid(_token)) await _performAuthorization();
   }
 
   Future<String> getAccessToken() async {
-    if (!Token.tokenIsValid(_token) )
-      await _performAuthorization();
+    if (!Token.tokenIsValid(_token)) await _performAuthorization();
 
     return _token.accessToken;
   }
 
   Future<String> getIdToken() async {
-    if (!Token.tokenIsValid(_token) )
-      await _performAuthorization();
+    if (!Token.tokenIsValid(_token)) await _performAuthorization();
 
     return _token.idToken;
   }
@@ -83,6 +80,9 @@ class AadOAuth {
     String code;
     try {
       code = await _requestCode.requestCode();
+      if (code == null) {
+        throw new Exception("Access denied or authentication canceled.");
+      }
       _token = await _requestToken.requestToken(code);
     } catch (e) {
       rethrow;
